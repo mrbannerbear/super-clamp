@@ -3,6 +3,7 @@ import React from "react";
 import AddElementForm from "@/components/AddElementForm";
 import ElementList from "@/components/ElementList";
 import { useStore } from "@/store/useStore";
+import ResultPanel from "./ResultPanel";
 
 export default function Wrapper() {
   const breakpoints = useStore((s) => s.breakpoints);
@@ -30,6 +31,8 @@ export default function Wrapper() {
       <section>
         <ElementList />
       </section>
+
+      <section><ResultPanel /></section>
     </div>
   );
 }

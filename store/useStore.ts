@@ -24,10 +24,7 @@ export interface ElementData {
 
 /** Zustand store shape */
 export interface Store {
-  /** List of breakpoints in descending order */
   breakpoints: number[];
-
-  /** All elements with their properties */
   elements: ElementData[];
 
   /** Add a new element (like .hero-title) */
@@ -44,6 +41,11 @@ export interface Store {
 
   /** Reset everything (clear localStorage) */
   reset: () => void;
+
+  /* ----------------- PROPERTY METHODS ----------------- */
+  addProperty: (elementId: string, name: string, unit: CSSUnit) => void;
+  updatePropertyValue: (elementId: string, propertyId: string, bp: number, value: number | "") => void;
+  removeProperty: (elementId: string, propertyId: string) => void;
 }
 
 /* ----------------------------- STORE ----------------------------- */
@@ -107,6 +109,55 @@ export const useStore = create<Store>()(
             elements: updatedElements,
           };
         }),
+
+      /* ----------------- PROPERTY METHODS ----------------- */
+
+      // Add a new property to an element
+      addProperty: (elementId: string, name: string, unit: CSSUnit) =>
+        set((state) => ({
+          elements: state.elements.map((el) => {
+            if (el.id !== elementId) return el;
+            const newProp: CSSProperty = {
+              id: crypto.randomUUID(),
+              name,
+              unit,
+              values: Object.fromEntries(
+                state.breakpoints.map((bp) => [bp, ""])
+              ) as Record<number, number | "">,
+            };
+            return { ...el, properties: [...el.properties, newProp] };
+          }),
+        })),
+
+      // Update a value of a property for a specific breakpoint
+      updatePropertyValue: (
+        elementId: string,
+        propertyId: string,
+        bp: number,
+        value: number | ""
+      ) =>
+        set((state) => ({
+          elements: state.elements.map((el) => {
+            if (el.id !== elementId) return el;
+            const properties = el.properties.map((prop) => {
+              if (prop.id !== propertyId) return prop;
+              return { ...prop, values: { ...prop.values, [bp]: value } };
+            });
+            return { ...el, properties };
+          }),
+        })),
+
+      // Remove a property from an element
+      removeProperty: (elementId: string, propertyId: string) =>
+        set((state) => ({
+          elements: state.elements.map((el) => {
+            if (el.id !== elementId) return el;
+            return {
+              ...el,
+              properties: el.properties.filter((p) => p.id !== propertyId),
+            };
+          }),
+        })),
 
       reset: () => ({
         breakpoints: [2560, 1920, 1280, 1024, 744, 390],
