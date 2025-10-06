@@ -27,7 +27,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+ <header className="bg-gray-800 shadow-md sticky top-0 z-20">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 className="text-lg font-semibold text-gray-100">CSS Clamp Generator</h1>
+            <div className="text-sm text-gray-400">Step 1 — Add elements</div>
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
       </body>
     </html>
   );
