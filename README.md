@@ -35,7 +35,7 @@
 1. Clone the repository:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/mrbannerbear/super-clamp.git
 ```
 
 2. Install dependencies:
