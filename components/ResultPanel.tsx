@@ -10,7 +10,7 @@ export default function ResultPanel() {
   const reset = useStore((s) => s.reset);
 
   const [open, setOpen] = useState(false);
-  const [copiedBp, setCopiedBp] = useState<number | null>(null);
+  const [copiedBp, setCopiedBp] = useState<number | "all" | null>(null);
 
   const sortedBps = [...breakpoints].sort((a, b) => b - a);
 
@@ -26,6 +26,9 @@ export default function ResultPanel() {
     reset();
     setOpen(false);
   }
+
+  // Generate full CSS for all breakpoints
+  const fullCSS = generateCSS(elements, breakpoints);
 
   return (
     <>
@@ -53,7 +56,20 @@ export default function ResultPanel() {
           </button>
         </div>
 
-        <div className="p-4 overflow-y-auto h-[calc(100%-130px)] space-y-4">
+        {/* Copy All Button */}
+        <div className="p-4 border-b border-gray-700 flex justify-end">
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(fullCSS);
+              setCopiedBp("all");
+            }}
+            className="px-3 py-1 bg-green-600 rounded hover:bg-green-700 text-white"
+          >
+            Copy All
+          </button>
+        </div>
+
+        <div className="p-4 overflow-y-auto h-[calc(100%-180px)] space-y-4">
           {sortedBps.map((bp) => {
             const activeElements = elements
               .map((el) => {
@@ -135,7 +151,7 @@ export default function ResultPanel() {
         {/* Copied notification */}
         {copiedBp && (
           <div className="fixed bottom-16 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg transition-all duration-300 z-50">
-            CSS for {copiedBp}px copied!
+            {copiedBp === "all" ? "Full CSS copied!" : `CSS for ${copiedBp}px copied!`}
           </div>
         )}
       </div>
