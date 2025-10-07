@@ -1,4 +1,5 @@
 "use client";
+
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -27,25 +28,27 @@ export interface Store {
   breakpoints: number[];
   elements: ElementData[];
 
-  /** Add a new element (like .hero-title) */
+  // Element methods
   addElement: (selector: string) => void;
-
-  /** Remove element by id */
   removeElement: (id: string) => void;
-
-  /** Change an element’s selector */
   setSelector: (id: string, selector: string) => void;
 
-  /** Add a new breakpoint */
+  // Breakpoint methods
   addBreakpoint: (bp: number) => void;
+  removeBreakpoint: (bp: number) => void;
+  updateBreakpoint: (oldBp: number, newBp: number) => void;
 
-  /** Reset everything (clear localStorage) */
-  reset: () => void;
-
-  /* ----------------- PROPERTY METHODS ----------------- */
+  // Property methods
   addProperty: (elementId: string, name: string, unit: CSSUnit) => void;
-  updatePropertyValue: (elementId: string, propertyId: string, bp: number, value: number | "") => void;
+  updatePropertyValue: (
+    elementId: string,
+    propertyId: string,
+    bp: number,
+    value: number | ""
+  ) => void;
   removeProperty: (elementId: string, propertyId: string) => void;
+
+  reset: () => void;
 }
 
 /* ----------------------------- STORE ----------------------------- */
@@ -56,6 +59,7 @@ export const useStore = create<Store>()(
       breakpoints: [2560, 1920, 1280, 1024, 744, 390],
       elements: [],
 
+      /* ----------------- ELEMENT METHODS ----------------- */
       addElement: (selector) => {
         const trimmed = selector.trim();
         if (!trimmed) return;
@@ -85,35 +89,31 @@ export const useStore = create<Store>()(
           ),
         })),
 
-      addBreakpoint: (bp) =>
-        set((state) => {
-          if (state.breakpoints.includes(bp)) return state; // avoid duplicates
+      /* ----------------- BREAKPOINT METHODS ----------------- */
 
-          const updatedBreakpoints = [...state.breakpoints, bp].sort(
-            (a, b) => b - a
-          );
+      addBreakpoint: (bp) => {
+        const state = get();
+        if (state.breakpoints.includes(bp)) return;
+        const updated = [...state.breakpoints, bp].sort((a, b) => b - a);
+        set({ breakpoints: updated });
+      },
 
-          const updatedElements = state.elements.map((el) => ({
-            ...el,
-            properties: el.properties.map((prop) => ({
-              ...prop,
-              values: {
-                ...prop.values,
-                [bp]: "" as "", // <- cast to "" so TS knows it matches Record<number, number | "">
-              },
-            })),
-          }));
+      removeBreakpoint: (bp) => {
+        const updated = get().breakpoints.filter((b) => b !== bp);
+        set({ breakpoints: updated });
+      },
 
-          return {
-            breakpoints: updatedBreakpoints,
-            elements: updatedElements,
-          };
-        }),
+      updateBreakpoint: (oldBp, newBp) => {
+        const state = get();
+        const updated = state.breakpoints
+          .map((b) => (b === oldBp ? newBp : b))
+          .sort((a, b) => b - a);
+        set({ breakpoints: updated });
+      },
 
       /* ----------------- PROPERTY METHODS ----------------- */
 
-      // Add a new property to an element
-      addProperty: (elementId: string, name: string, unit: CSSUnit) =>
+      addProperty: (elementId, name, unit) =>
         set((state) => ({
           elements: state.elements.map((el) => {
             if (el.id !== elementId) return el;
@@ -129,13 +129,7 @@ export const useStore = create<Store>()(
           }),
         })),
 
-      // Update a value of a property for a specific breakpoint
-      updatePropertyValue: (
-        elementId: string,
-        propertyId: string,
-        bp: number,
-        value: number | ""
-      ) =>
+      updatePropertyValue: (elementId, propertyId, bp, value) =>
         set((state) => ({
           elements: state.elements.map((el) => {
             if (el.id !== elementId) return el;
@@ -147,8 +141,7 @@ export const useStore = create<Store>()(
           }),
         })),
 
-      // Remove a property from an element
-      removeProperty: (elementId: string, propertyId: string) =>
+      removeProperty: (elementId, propertyId) =>
         set((state) => ({
           elements: state.elements.map((el) => {
             if (el.id !== elementId) return el;

@@ -4,6 +4,7 @@ import AddElementForm from "@/components/AddElementForm";
 import ElementList from "@/components/ElementList";
 import { useStore } from "@/store/useStore";
 import ResultPanel from "./ResultPanel";
+import BreakpointManager from "./BreakpointManager";
 
 export default function Wrapper() {
   const breakpoints = useStore((s) => s.breakpoints);
@@ -16,16 +17,7 @@ export default function Wrapper() {
 
       <section className="bg-gray-800 p-4 rounded-md shadow-sm">
         <h3 className="font-medium mb-3 text-gray-100">Breakpoints</h3>
-        <div className="flex gap-2 flex-wrap">
-          {breakpoints.map((b) => (
-            <div
-              key={b}
-              className="px-3 py-1 bg-gray-700 rounded text-sm text-gray-200"
-            >
-              {b}px
-            </div>
-          ))}
-        </div>
+        <BreakpointManager />
       </section>
 
       <section>
