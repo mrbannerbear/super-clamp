@@ -1,36 +1,126 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Responsive CSS Clamp Generator
 
-## Getting Started
+**Single-line description:**  
+**Responsive CSS Clamp Generator** – Generate CSS with responsive clamp values per breakpoint for multiple elements, with live preview, copy, and clear controls.
 
-First, run the development server:
+**Live Demo:** [Try it here](https://your-live-link.com)
+
+---
+
+## Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [How It Works](#how-it-works)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Features
+
+- **Dynamic breakpoints** – Add, remove, or update breakpoints easily.
+- **Element-based CSS** – Manage multiple elements like `.hero-title` or `#header`.
+- **Property management** – Add CSS properties per element with numeric values and units.
+- **Responsive `clamp()`** – Automatically generates CSS using `clamp()` for smooth scaling across breakpoints.
+- **Live preview** – View generated CSS in real-time per breakpoint.
+- **Per-breakpoint controls** – Copy or clear CSS for each breakpoint individually.
+- **Reset functionality** – Clear all elements and breakpoints with one click.
+
+---
+
+## Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo-url>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install  
+or  
+yarn
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Run the development server:
 
-## Learn More
+```bash
+npm run dev  
+or  
+yarn dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Usage
 
-## Deploy on Vercel
+1. Click **Add Element** to create a new CSS selector.  
+2. Add **properties** (e.g., `font-size`, `margin-top`) and set values per breakpoint.  
+3. Add or remove **breakpoints** dynamically as needed.  
+4. Click **Result** to open the slide-over panel:  
+   - Each breakpoint has its own section with CSS output.  
+   - Use **Copy** to copy CSS for that breakpoint.  
+   - Use **Clear** to clear values for a specific breakpoint.  
+5. Click **Clear All** to reset the entire store.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## How It Works
+
+### 1. Breakpoints
+- All breakpoints are stored in descending order.
+- Missing values for a property at a breakpoint are ignored in that breakpoint's CSS.
+- Adding a new breakpoint automatically inserts it in the correct descending order.
+
+### 2. Elements & Properties
+- Each element (e.g., `.hero`) has multiple properties (e.g., `font-size`).
+- Properties store numeric values per breakpoint and a separate unit (e.g., `px`, `rem`).
+
+### 3. Clamp Calculation
+- The tool uses the `clamp()` formula for smooth scaling between breakpoints:
+
+slope = (maxValue - minValue) / (maxBreakpoint - minBreakpoint) * 100  
+intercept = minValue - slope * minBreakpoint / 100  
+clampValue = clamp(minValue, slope * vw + intercept, maxValue)
+
+- Only active properties (with values) are included in the generated CSS.
+
+### 4. CSS Generation
+- For each breakpoint, only elements with active properties are included.
+- Each breakpoint has its own section in the result panel for easier control.
+- Copy or clear CSS per breakpoint without affecting others.
+
+---
+
+## Project Structure
+
+/components  
+  ResultPanel.tsx     # Slide-over UI panel for CSS results  
+/utils  
+  generateCss.ts      # Generates CSS per breakpoint  
+  generateClamp.ts    # Calculates clamp values for responsive scaling  
+/store  
+  useStore.ts         # Zustand store for elements, properties, breakpoints  
+/helpers  
+  breakpoints.ts      # Helper functions for sorting and managing breakpoints  
+
+---
+
+## Contributing
+
+Contributions are welcome!  
+
+- Submit bug reports or feature requests via Issues.  
+- Fork the repo and create pull requests for improvements.
+
+---
+
+## License
+
+MIT License
