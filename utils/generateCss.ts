@@ -1,28 +1,33 @@
 import { ElementData } from "@/store/useStore";
 import { generateClamp } from "./generateClamp";
 
+/**
+ * Generates CSS per breakpoint, skips empty elements/properties
+ */
 export function generateCSS(elements: ElementData[], breakpoints: number[]) {
+  const sortedBps = [...breakpoints].sort((a, b) => b - a);
   let css = "";
 
-  const sortedBps = [...breakpoints].sort((a, b) => b - a);
-
   for (const bp of sortedBps) {
-    css += `@media (max-width: ${bp}px) {\n`;
+    let bpCss = "";
 
     for (const el of elements) {
-      css += `  ${el.selector} {\n`;
+      const activeProps = el.properties.filter((prop) =>
+        Object.values(prop.values).some((v) => typeof v === "number")
+      );
 
-      for (const prop of el.properties) {
+      if (!activeProps.length) continue; // skip element entirely
+
+      let propsCss = "";
+      for (const prop of activeProps) {
         const clampMap = generateClamp(prop.values, breakpoints);
-        if (clampMap[bp]) {
-          css += `    ${prop.name}: ${clampMap[bp]};\n`;
-        }
+        if (clampMap[bp]) propsCss += `    ${prop.name}: ${clampMap[bp]};\n`;
       }
 
-      css += `  }\n`;
+      if (propsCss) bpCss += `  ${el.selector} {\n${propsCss}  }\n`;
     }
 
-    css += `}\n\n`;
+    if (bpCss) css += `@media (max-width: ${bp}px) {\n${bpCss}}\n\n`;
   }
 
   return css;
