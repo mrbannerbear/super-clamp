@@ -30,7 +30,9 @@ export default function PropertyTable({ elementId }: Props) {
             <th className="px-2 py-1 border-r border-gray-600">Property</th>
             <th className="px-2 py-1 border-r border-gray-600">Unit</th>
             {breakpoints.map((bp) => (
-              <th key={bp} className="px-2 py-1 border-r border-gray-600">{bp}px</th>
+              <th key={bp} className="px-2 py-1 border-r border-gray-600">
+                {bp}px
+              </th>
             ))}
             <th className="px-2 py-1">Actions</th>
           </tr>
@@ -49,7 +51,9 @@ export default function PropertyTable({ elementId }: Props) {
                   className="bg-gray-700 text-gray-100 border border-gray-600 rounded px-1 py-0.5"
                 >
                   {units.map((u) => (
-                    <option key={u} value={u}>{u}</option>
+                    <option key={u} value={u}>
+                      {u}
+                    </option>
                   ))}
                 </select>
               </td>
@@ -57,14 +61,20 @@ export default function PropertyTable({ elementId }: Props) {
                 <td key={bp} className="px-1 py-1">
                   <input
                     type="number"
-                    value={prop.values[bp] === "" ? "" : prop.values[bp]}
+                    value={prop.values[bp] ?? ""} // ✅ handles undefined
                     onChange={(e) =>
-                      updateValue(elementId, prop.id, bp, e.target.value === "" ? "" : Number(e.target.value))
+                      updateValue(
+                        elementId,
+                        prop.id,
+                        bp,
+                        e.target.value === "" ? "" : Number(e.target.value)
+                      )
                     }
                     className="w-16 bg-gray-700 text-gray-100 border border-gray-600 rounded px-1 py-0.5"
                   />
                 </td>
               ))}
+
               <td className="px-1 py-1">
                 <button
                   onClick={() => removeProperty(elementId, prop.id)}

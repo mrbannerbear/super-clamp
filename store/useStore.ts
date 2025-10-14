@@ -48,6 +48,9 @@ export interface Store {
   ) => void;
   removeProperty: (elementId: string, propertyId: string) => void;
 
+  // NEW
+  clearBreakpointValues: (bp: number) => void;
+
   reset: () => void;
 }
 
@@ -152,10 +155,38 @@ export const useStore = create<Store>()(
           }),
         })),
 
-      reset: () => ({
-        breakpoints: [2560, 1920, 1280, 1024, 744, 390],
-        elements: [],
-      }),
+      /* ----------------- CLEAR VALUES FOR SPECIFIC BP ----------------- */
+
+      clearBreakpointValues: (bp) => {
+        set((state) => {
+          const updatedElements = state.elements
+            .map((el) => {
+              const updatedProperties = el.properties
+                .map((prop) => {
+                  // Remove the specific breakpoint key entirely
+                  const newValues = { ...prop.values };
+                  delete newValues[bp];
+                  return { ...prop, values: newValues };
+                })
+                // Remove properties that now have no values left
+                .filter((prop) => Object.keys(prop.values).length > 0);
+
+              return { ...el, properties: updatedProperties };
+            })
+            // Remove elements that now have no properties
+            .filter((el) => el.properties.length > 0);
+
+          return { elements: updatedElements };
+        });
+      },
+
+      /* ----------------- RESET EVERYTHING ----------------- */
+
+      reset: () =>
+        set({
+          elements: [],
+          breakpoints: [2560, 1920, 1280, 1024, 744, 390],
+        }),
     }),
     { name: "css-clamp-store" }
   )

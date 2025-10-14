@@ -21,6 +21,8 @@ export default function ResultPanel() {
     }
   }, [copiedBp]);
 
+  const clearBreakpointValues = useStore((s) => s.clearBreakpointValues);
+
   function clearAll() {
     if (!confirm("Are you sure? This will clear all elements and breakpoints.")) return;
     reset();
@@ -123,6 +125,7 @@ export default function ResultPanel() {
                             prop.values[bp] = "";
                           })
                         );
+                        clearBreakpointValues(bp);
                       }}
                       className="px-2 py-1 bg-red-600 rounded hover:bg-red-700 text-white"
                     >
