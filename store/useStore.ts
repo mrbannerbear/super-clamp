@@ -25,6 +25,7 @@ export interface ElementData {
 
 /** Zustand store shape */
 export interface Store {
+  mode: string;
   breakpoints: number[];
   elements: ElementData[];
 
@@ -48,9 +49,13 @@ export interface Store {
   ) => void;
   removeProperty: (elementId: string, propertyId: string) => void;
 
-  // NEW
+  // clear breakpoint values
   clearBreakpointValues: (bp: number) => void;
 
+  // Toggle between simple and advanced calculators
+  toggleMode: () => void
+
+  // reset all
   reset: () => void;
 }
 
@@ -179,6 +184,13 @@ export const useStore = create<Store>()(
           return { elements: updatedElements };
         });
       },
+
+      mode: "advanced", // "advanced" | "simple"
+      toggleMode: () =>
+        set((state) => ({
+          mode: state.mode === "advanced" ? "simple" : "advanced",
+        })),
+
 
       /* ----------------- RESET EVERYTHING ----------------- */
 
