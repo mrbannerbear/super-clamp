@@ -24,7 +24,8 @@ export default function ResultPanel() {
   const clearBreakpointValues = useStore((s) => s.clearBreakpointValues);
 
   function clearAll() {
-    if (!confirm("Are you sure? This will clear all elements and breakpoints.")) return;
+    if (!confirm("Are you sure? This will clear all elements and breakpoints."))
+      return;
     reset();
     setOpen(false);
   }
@@ -90,7 +91,9 @@ export default function ResultPanel() {
                 const props = el.properties
                   .map((prop) => {
                     const clampMap = generateClamp(prop.values, breakpoints);
-                    return clampMap[bp] ? `  ${prop.name}: ${clampMap[bp]};` : "";
+                    return clampMap[bp]
+                      ? `  ${prop.name}: ${clampMap[bp]};`
+                      : "";
                   })
                   .filter(Boolean)
                   .join("\n");
@@ -101,22 +104,32 @@ export default function ResultPanel() {
               .filter(Boolean)
               .join("\n\n");
 
-            if (cssForBP) cssForBP = `@media (max-width: ${bp}px) {\n${cssForBP}\n}`;
+            if (cssForBP)
+              cssForBP = `@media (max-width: ${bp}px) {\n${cssForBP}\n}`;
 
             return (
-              <div key={bp} className="border border-gray-700 rounded overflow-hidden">
+              <div
+                key={bp}
+                className="border border-gray-700 rounded overflow-hidden"
+              >
                 <div className="flex justify-between bg-gray-800 px-4 py-2">
                   <h3 className="text-gray-200 font-semibold">{bp}px</h3>
                   <div className="flex gap-2">
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(cssForBP);
+                        // Remove @media wrapper when copying a single breakpoint
+                        const stripped = cssForBP
+                          ?.replace(new RegExp(`^@media[\\s\\S]*?{\\s*`), "") // remove "@media ... {"
+                          ?.replace(/}\s*$/, ""); // remove final closing brace
+
+                        navigator.clipboard.writeText(stripped.trim());
                         setCopiedBp(bp);
                       }}
                       className="px-2 py-1 bg-green-600 rounded hover:bg-green-700 text-white"
                     >
                       Copy
                     </button>
+
                     <button
                       onClick={() => {
                         if (!confirm(`Clear all values for ${bp}px?`)) return;
@@ -154,7 +167,9 @@ export default function ResultPanel() {
         {/* Copied notification */}
         {copiedBp && (
           <div className="fixed bottom-16 right-4 bg-green-600 text-white px-4 py-2 rounded shadow-lg transition-all duration-300 z-50">
-            {copiedBp === "all" ? "Full CSS copied!" : `CSS for ${copiedBp}px copied!`}
+            {copiedBp === "all"
+              ? "Full CSS copied!"
+              : `CSS for ${copiedBp}px copied!`}
           </div>
         )}
       </div>
