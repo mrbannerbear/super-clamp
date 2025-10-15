@@ -8,31 +8,35 @@ export default function SimpleCalculator() {
   const [maxValue, setMaxValue] = useState("");
   const [result, setResult] = useState("");
 
-  const generateClamp = () => {
+    const generateClamp = () => {
     const minW = parseFloat(minWidth);
     const maxW = parseFloat(maxWidth);
     const minV = parseFloat(minValue);
     const maxV = parseFloat(maxValue);
 
     if (
-      isNaN(minW) ||
-      isNaN(maxW) ||
-      isNaN(minV) ||
-      isNaN(maxV) ||
-      maxW === minW
+        isNaN(minW) ||
+        isNaN(maxW) ||
+        isNaN(minV) ||
+        isNaN(maxV) ||
+        maxW === minW
     ) {
-      setResult("Invalid inputs");
-      return;
+        setResult("Invalid inputs");
+        return;
     }
 
+    // Slope per vw
     const slope = ((maxV - minV) / (maxW - minW)) * 100;
+
+    // Intercept for preferred (fluid) value
     const intercept = minV - (slope * minW) / 100;
 
-    const clampStr = `clamp(${minV}px, ${slope.toFixed(
-      3
-    )}vw + ${intercept.toFixed(3)}px, ${maxV}px)`;
+    const clampStr = `clamp(${maxV}px, calc(${intercept.toFixed(3)}px + ((1vw - ${minW / 100}px) * ${slope.toFixed(
+        3
+    )})), ${minV}px)`;
+
     setResult(clampStr);
-  };
+    };
 
   const copyToClipboard = () => {
     if (!result) return;

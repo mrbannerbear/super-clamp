@@ -2,10 +2,10 @@ export function generateClamp(
   values: Record<number, number | "">,
   breakpoints: number[]
 ) {
-  // Only keep breakpoints that actually have a numeric value
-  const validBps = breakpoints.filter((bp) => typeof values[bp] === "number");
+  const validBps = breakpoints.filter(
+    (bp) => typeof values[bp] === "number"
+  );
 
-  // If less than 2 breakpoints have real values, no clamp can be generated
   if (validBps.length < 2) return {};
 
   const sortedBps = [...validBps].sort((a, b) => b - a);
@@ -18,20 +18,19 @@ export function generateClamp(
     const valMax = values[bpMax] as number;
     const valMin = values[bpMin] as number;
 
-    // Skip if either value is missing (defensive)
     if (typeof valMax !== "number" || typeof valMin !== "number") continue;
 
-    // slope (per vw) and intercept for the preferred (fluid) value
-    const slope = ((valMax - valMin) / (bpMax - bpMin)) * 100;
-    const intercept = valMin - (slope * bpMin) / 100;
+    // Convert min value to rem (assuming default 16px = 1rem)
+    const remBase = valMin / 16;
 
-    // Ensure clamp bounds are ordered (min <= max) to avoid inverted clamp
-    const lower = Math.min(valMin, valMax);
-    const upper = Math.max(valMin, valMax);
+    // XX = min_viewport / 100
+    const XX = bpMin / 100;
 
-    clamps[bpMax] = `clamp(${lower}px, ${slope.toFixed(
-      3
-    )}vw + ${intercept.toFixed(3)}px, ${upper}px)`;
+    // YY = 100 * (max_font_size - min_font_size) / (max_viewport - min_viewport)
+    const YY = (100 * (valMax - valMin)) / (bpMax - bpMin);
+
+    // clamp(min, fluid, max)
+    clamps[bpMax] = `clamp(${valMin}px, calc(${remBase}rem + ((1vw - ${XX}px) * ${YY})), ${valMax}px)`;
   }
 
   return clamps;
