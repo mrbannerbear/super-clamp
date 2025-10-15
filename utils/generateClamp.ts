@@ -2,13 +2,11 @@ export function generateClamp(
   values: Record<number, number | "">,
   breakpoints: number[]
 ) {
-  const validBps = breakpoints.filter(
-    (bp) => typeof values[bp] === "number"
-  );
+  const validBps = breakpoints.filter((bp) => typeof values[bp] === "number");
 
   if (validBps.length < 2) return {};
 
-  const sortedBps = [...validBps].sort((a, b) => b - a);
+  const sortedBps = [...validBps].sort((a, b) => b - a); // largest to smallest
   const clamps: Record<number, string> = {};
 
   for (let i = 0; i < sortedBps.length - 1; i++) {
@@ -20,17 +18,22 @@ export function generateClamp(
 
     if (typeof valMax !== "number" || typeof valMin !== "number") continue;
 
-    // Convert min value to rem (assuming default 16px = 1rem)
-    const remBase = valMin / 16;
+    // Determine clamp bounds
+    const lower = Math.min(valMin, valMax);
+    const upper = Math.max(valMin, valMax);
 
-    // XX = min_viewport / 100
-    const XX = bpMin / 100;
+    // Slope per vw
+    const slope = ((valMax - valMin) / (bpMax - bpMin)) * 100;
 
-    // YY = 100 * (max_font_size - min_font_size) / (max_viewport - min_viewport)
-    const YY = (100 * (valMax - valMin)) / (bpMax - bpMin);
+    // Intercept
+    const intercept = valMin - (slope * bpMin) / 100;
 
-    // clamp(min, fluid, max)
-    clamps[bpMax] = `clamp(${valMin}px, calc(${remBase}rem + ((1vw - ${XX}px) * ${YY})), ${valMax}px)`;
+    // Rem conversion of lower bound for fluid part
+    const remBase = lower / 16;
+
+    clamps[bpMax] = `clamp(${lower}px, calc(${remBase}rem + ((1vw - ${bpMin / 100}px) * ${slope.toFixed(
+      4
+    )})), ${upper}px)`;
   }
 
   return clamps;

@@ -21,32 +21,38 @@ export default function SimpleCalculator() {
     };
   }, [minWidth, maxWidth, minValue, maxValue]);
 
-  const generateClamp = () => {
-    const minW = parseFloat(minWidth);
-    const maxW = parseFloat(maxWidth);
-    const minV = parseFloat(minValue);
-    const maxV = parseFloat(maxValue);
+const generateClamp = () => {
+  const minW = parseFloat(minWidth);
+  const maxW = parseFloat(maxWidth);
+  const minV = parseFloat(minValue);
+  const maxV = parseFloat(maxValue);
 
-    if (
-      isNaN(minW) ||
-      isNaN(maxW) ||
-      isNaN(minV) ||
-      isNaN(maxV) ||
-      maxW === minW
-    ) {
-      setResult("Invalid inputs");
-      return;
-    }
+  if (
+    isNaN(minW) ||
+    isNaN(maxW) ||
+    isNaN(minV) ||
+    isNaN(maxV) ||
+    maxW === minW
+  ) {
+    setResult("Invalid inputs");
+    return;
+  }
 
-    const slope = ((maxV - minV) / (maxW - minW)) * 100;
-    const intercept = minV - (slope * minW) / 100;
+  const slope = ((maxV - minV) / (maxW - minW)) * 100;
+  const intercept = minV - (slope * minW) / 100;
 
-    const clampStr = `clamp(${maxV}px, calc(${intercept.toFixed(
-      3
-    )}px + ((1vw - ${minW / 100}px) * ${slope.toFixed(3)})), ${minV}px)`;
+  // Determine clamp bounds
+  const lower = Math.min(minV, maxV);
+  const upper = Math.max(minV, maxV);
 
-    setResult(clampStr);
-  };
+  const remBase = lower / 16;
+
+  const clampStr = `clamp(${lower}px, calc(${remBase}rem + ((1vw - ${minW / 100}px) * ${slope.toFixed(
+    4
+  )})), ${upper}px)`;
+
+  setResult(clampStr);
+};
 
   const copyToClipboard = () => {
     if (!result) return;
