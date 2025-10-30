@@ -5,27 +5,83 @@ interface Props {
   onSelect: (name: string) => void;
 }
 
-const allProperties = [
-  "font-size",
+export const allProperties = [
+  // 📏 Size & Box Model
+  "width",
+  "min-width",
+  "max-width",
+  "height",
+  "min-height",
+  "max-height",
+
+  // 🧱 Margin & Padding
+  "margin",
   "margin-top",
+  "margin-right",
   "margin-bottom",
   "margin-left",
-  "margin-right",
   "padding",
   "padding-top",
+  "padding-right",
   "padding-bottom",
   "padding-left",
-  "padding-right",
-  "width",
-  "height",
-  "line-height",
-  "letter-spacing",
+
+  // 🎨 Border & Radius
+  "border-width",
+  "border-top-width",
+  "border-right-width",
+  "border-bottom-width",
+  "border-left-width",
   "border-radius",
-  "opacity",
+  "border-top-left-radius",
+  "border-top-right-radius",
+  "border-bottom-left-radius",
+  "border-bottom-right-radius",
+  "outline-width",
+  "outline-offset",
+
+  // ✍️ Typography
+  "font-size",
+  "line-height", // can use px
+  "letter-spacing",
+  "word-spacing",
+  "text-indent",
+
+  // 🧭 Position & Layout
   "top",
-  "left",
   "right",
   "bottom",
+  "left",
+  "inset",
+  "gap",
+  "row-gap",
+  "column-gap",
+
+  // 🧩 Flex & Grid
+  "flex-basis",
+  "grid-gap",
+  "grid-column-gap",
+  "grid-row-gap",
+  "grid-template-columns",
+  "grid-template-rows",
+  "grid-auto-rows",
+  "grid-auto-columns",
+
+  // 🌀 Transform & Effects
+  "translate",      // e.g. translate(10px)
+  "translate-x",
+  "translate-y",
+  "perspective",
+  "skew-x",
+  "skew-y",
+
+  // 📐 Miscellaneous
+  "object-position",
+  "object-position-x",
+  "object-position-y",
+  "background-position",
+  "background-position-x",
+  "background-position-y"
 ];
 
 export default function PropertyDropdown({ onSelect }: Props) {
