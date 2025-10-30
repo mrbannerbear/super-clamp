@@ -21,11 +21,16 @@ export function generateClamp(
     const lower = Math.min(valMin, valMax);
     const upper = Math.max(valMin, valMax);
 
+    // Calculate slope (YY in the formula)
     const slope = ((valMax - valMin) / (bpMax - bpMin)) * 100;
-    const intercept = valMin - (slope * bpMin) / 100;
-    const remBase = lower / 16;
+    
+    // Use the MINIMUM viewport's value for remBase (ZZ in the formula)
+    const remBase = valMin / 16;
+    
+    // XX in the formula - this should be the MINIMUM viewport
+    const minViewport = bpMin / 100;
 
-    clamps[bpMax] = `clamp(${lower}px, calc(${remBase}rem + ((1vw - ${bpMin / 100}px) * ${slope.toFixed(
+    clamps[bpMax] = `clamp(${lower}px, calc(${remBase}rem + ((1vw - ${minViewport}px) * ${slope.toFixed(
       4
     )})), ${upper}px)`;
   }
