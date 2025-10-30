@@ -21,13 +21,8 @@ export function generateClamp(
     const lower = Math.min(valMin, valMax);
     const upper = Math.max(valMin, valMax);
 
-    // Calculate slope (YY in the formula)
     const slope = ((valMax - valMin) / (bpMax - bpMin)) * 100;
-    
-    // Use the MINIMUM viewport's value for remBase (ZZ in the formula)
     const remBase = valMin / 16;
-    
-    // XX in the formula - this should be the MINIMUM viewport
     const minViewport = bpMin / 100;
 
     clamps[bpMax] = `clamp(${lower}px, calc(${remBase}rem + ((1vw - ${minViewport}px) * ${slope.toFixed(
@@ -35,7 +30,6 @@ export function generateClamp(
     )})), ${upper}px)`;
   }
 
-  // ✅ Add static style for the smallest breakpoint (no clamp)
   const smallestBp = sortedBps[sortedBps.length - 1];
   const smallestVal = values[smallestBp];
   if (typeof smallestVal === "number") {
