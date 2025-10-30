@@ -38,7 +38,7 @@ export default function PropertyTable({ elementId }: Props) {
           </tr>
         </thead>
         <tbody>
-          {element.properties.map((prop) => (
+          {element.properties.map((prop, rowIndex) => (
             <tr key={prop.id} className="hover:bg-gray-700">
               <td className="px-2 py-1">{prop.name}</td>
               <td className="px-2 py-1">
@@ -57,11 +57,37 @@ export default function PropertyTable({ elementId }: Props) {
                   ))}
                 </select>
               </td>
-              {breakpoints.map((bp) => (
+
+              {breakpoints.map((bp, colIndex) => (
                 <td key={bp} className="px-1 py-1">
                   <input
                     type="number"
-                    value={prop.values[bp] ?? ""} // ✅ handles undefined
+                    value={prop.values[bp] ?? ""}
+                    data-row={rowIndex}
+                    data-col={colIndex}
+                    onKeyDown={(e) => {
+                      if (
+                        e.altKey &&
+                        (e.key === "ArrowDown" || e.key === "ArrowUp")
+                      ) {
+                        e.preventDefault();
+
+                        const current = e.currentTarget;
+                        const row = Number(current.dataset.row);
+                        const col = Number(current.dataset.col);
+
+                        const nextRow =
+                          e.key === "ArrowDown" ? row + 1 : row - 1;
+
+                        const nextInput = document.querySelector(
+                          `input[data-row="${nextRow}"][data-col="${col}"]`
+                        ) as HTMLInputElement | null;
+
+                        if (nextInput) {
+                          nextInput.focus();
+                        }
+                      }
+                    }}
                     onChange={(e) =>
                       updateValue(
                         elementId,
@@ -70,7 +96,7 @@ export default function PropertyTable({ elementId }: Props) {
                         e.target.value === "" ? "" : Number(e.target.value)
                       )
                     }
-                    className="w-16 bg-gray-700 text-gray-100 border border-gray-600 rounded px-1 py-0.5"
+                    className="w-16 bg-gray-700 text-gray-100 border border-gray-600 rounded px-1 py-0.5 focus:ring-2 focus:ring-sky-500 outline-none"
                   />
                 </td>
               ))}
