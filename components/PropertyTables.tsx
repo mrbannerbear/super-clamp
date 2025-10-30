@@ -67,7 +67,7 @@ export default function PropertyTable({ elementId }: Props) {
                     data-col={colIndex}
                     onKeyDown={(e) => {
                       if (
-                        e.altKey &&
+                        e.shiftKey &&
                         (e.key === "ArrowDown" || e.key === "ArrowUp")
                       ) {
                         e.preventDefault();
